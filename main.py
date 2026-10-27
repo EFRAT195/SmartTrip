@@ -12,7 +12,12 @@ app = FastAPI()
 # מתן הרשאה לממשק ה-React לשלוח בקשות לשרת
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173"],
+    allow_origins=[
+        "http://localhost:5173",
+        "http://localhost:5174",
+        "http://127.0.0.1:5173",
+        "http://127.0.0.1:5174",
+    ],
     allow_credentials=False,
     allow_methods=["POST"],
     allow_headers=["Content-Type"],

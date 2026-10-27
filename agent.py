@@ -76,6 +76,9 @@ FINAL_FORMAT = {
             "summary": {
                 "type": "string"
             },
+            "selection_reason": {
+                "type": "string"
+            },
             "equipment": {
                 "type": "array",
                 "items": {
@@ -89,7 +92,7 @@ FINAL_FORMAT = {
                 }
             }
         },
-        "required": ["summary", "equipment"],
+        "required": ["summary", "selection_reason", "equipment"],
         "additionalProperties": False
     }
 }
@@ -98,6 +101,7 @@ FINAL_FORMAT = {
 def run_agent(region, category, hours, budget, trip_date):
     attractions_by_id = {}
     last_validation = None
+    last_attempt_ids = None
     weather_result = None
     logs = []
 
@@ -199,6 +203,11 @@ Equipment rules:
 Return a JSON object:
 - summary: a short Hebrew explanation of the trip
   and weather, or why planning failed.
+- selection_reason: a short Hebrew explanation of why the selected
+  attractions fit the user's preferences, time and budget.
+  Base it only on actual search and validation results.
+  Do not invent reasons for excluding other attractions.
+  If no trip was validated, return an empty string.
 - equipment: relevant equipment recommendations,
   each with a Hebrew name and reason.
 If the trip is invalid, return an empty equipment list.
@@ -232,6 +241,18 @@ Do not invent weather data.
                 else []
             )
 
+            # נימוק הבחירה מבוסס על המסלול שאושר, ולא על השערות
+            selection_reason = (
+                recommendations["selection_reason"].strip()
+                if success
+                else ""
+            )
+
+            # משלבים את הנימוק בטקסט הקיים כדי שיופיע בממשק ללא שינוי ב-React
+            final_summary = recommendations["summary"]
+            if selection_reason:
+                final_summary += "\n\nלמה נבחר המסלול? " + selection_reason
+
             logs.append({
                 "action": "equipment",
                 "title": "התאמת ציוד לטיול",
@@ -246,7 +267,8 @@ Do not invent weather data.
 
             return {
                 "success": success,
-                "result": recommendations["summary"],
+                "result": final_summary,
+                "selection_reason": selection_reason,
                 "logs": logs,
                 "trip": last_validation if success else None,
                 "weather": weather_result,
@@ -266,6 +288,7 @@ Do not invent weather data.
                 }
 
                 last_validation = None
+                last_attempt_ids = None
                 weather_result = None
 
                 logs.append({
@@ -280,6 +303,26 @@ Do not invent weather data.
 
             elif call.name == "check_trip":
                 ids = args["attraction_ids"]
+
+                # מציגים ניסיון תיקון רק אם הבדיקה הקודמת נכשלה
+                # והמודל בחר הפעם הרכב אטרקציות שונה
+                if (
+                    last_validation is not None
+                    and not last_validation.get("valid", False)
+                    and last_attempt_ids is not None
+                    and ids != last_attempt_ids
+                ):
+                    logs.append({
+                        "action": "revision",
+                        "title": "הסוכן שינה את המסלול",
+                        "description": (
+                            "בעקבות הבדיקה שנכשלה, הסוכן בחר "
+                            "הרכב אטרקציות אחר ושלח אותו לבדיקה חוזרת."
+                        ),
+                        "success": True
+                    })
+
+                last_attempt_ids = list(ids)
 
                 # מונעים שימוש באטרקציות שלא נמצאו או בחירה כפולה
                 selected = [
@@ -422,6 +465,7 @@ Do not invent weather data.
             "הסוכן הגיע למגבלת הפעולות "
             "ולא הצליח להשלים את התכנון."
         ),
+        "selection_reason": "",
         "logs": logs,
         "trip": None,
         "weather": weather_result,
