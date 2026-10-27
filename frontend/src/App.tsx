@@ -444,7 +444,7 @@ function App() {
 
               {trip.success && trip.trip ? (
                 <>
-                  <div className="form-grid">
+                  <div className="trip-summary-grid">
                     <div className="summary-item">
                       <strong>📅 תאריך הטיול</strong>
 
@@ -532,7 +532,7 @@ function App() {
               {/* יומן הפעולות מאפשר לראות את החלטות הסוכן */}
               <div className="steps">
                 {trip.logs.map((log, index) => (
-                  <div className="step" key={index}>
+                  <div className={`step ${log.success ? "step-success" : "step-warning"}`} key={index}>
                     <span className="step-number">
                       {index + 1}
                     </span>

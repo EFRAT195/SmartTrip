@@ -1,687 +1,131 @@
-* {
-  box-sizing: border-box;
-}
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f5f7fb;
-  color: #18233b;
-}
-.app {
-  min-height: 100vh;
-}
-// כותרת האתר
-.header {
-  height: 76px;
-  padding: 0 8%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: white;
-  border-bottom: 1px solid #e9edf3;
-}
-.logo {
-  font-size: 25px;
-  font-weight: 800;
-  color: #2563eb;
-}
-.header-tag {
-  font-size: 13px;
-  color: #64748b;
-  background: #f1f5f9;
-  padding: 9px 15px;
-  border-radius: 30px;
-}
-.container {
-  max-width: 1050px;
-  margin: auto;
-  padding: 65px 20px 90px;
-}
-.eyebrow {
-  display: inline-block;
-  color: #2563eb;
-  background: #eaf1ff;
-  border-radius: 30px;
-  padding: 9px 17px;
-  font-size: 13px;
-  font-weight: 700;
-}
-// העיצוב המשותף לכרטיסים הראשיים
-.result-card,
-.agent-card,
-.loading-card {
-  background: white;
-  border: 1px solid #e8edf5;
-  border-radius: 22px;
-  padding: 35px;
-  box-shadow: 0 12px 40px rgba(25, 45, 85, 0.045);
-}
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&display=swap');
 
-input, select {
-  width: 100%;
-  font: inherit;
-  outline: none;
-}
-.plan-button {
-  width: 100%;
-  border: 0;
-  cursor: pointer;
-}
-.plan-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-// טופס תכנון הטיול
-.form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-}
-.error {
-  color: #dc2626;
-  text-align: center;
-}
-// מצב טעינה בזמן שהסוכן עובד
-.loading-card {
-  text-align: center;
-  margin-top: 28px;
-}
-.spinner {
-  width: 35px;
-  height: 35px;
-  border: 4px solid #dbeafe;
-  border-top-color: #2563eb;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: auto;
-}
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-// תוצאות המסלול
-.results {
-  display: grid;
-  gap: 24px;
-  margin-top: 30px;
-}
-.result-card {
-  h2 {
-    margin: 20px 0;
-  }
-  > h3 {
-    margin-top: 32px;
-    font-size: 20px;
-  }
-}
-.trip-text {
-  white-space: pre-wrap;
-  line-height: 2;
-  color: #475569;
-  overflow-wrap: anywhere;
-  margin-top: 22px;
-}
-// כרטיסי האטרקציות והתמונות
-.attractions-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 18px;
-  margin-top: 20px;
-}
-.attraction-item {
-  overflow: hidden;
-  border: 1px solid #e8edf0;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow: 0 8px 24px rgba(20, 40, 40, 0.06);
-  transition: transform 0.2s, box-shadow 0.2s;
-  &:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 30px rgba(20, 40, 40, 0.1);
-  }
-}
-.attraction-image {
-  width: 100%;
-  height: 180px;
-  overflow: hidden;
-  background: #eef4f1;
-  img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-}
-.image-placeholder {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 30px;
-  color: #6f8981;
-}
-.attraction-content {
-  padding: 18px;
-  h3 {
-    margin: 8px 0;
-    font-size: 19px;
-  }
-  p {
-    margin: 0;
-    color: #64748b;
-    font-size: 14px;
-  }
-}
-.attraction-number {
-  color: #16866b;
-  font-size: 12px;
-  font-weight: 700;
-}
-.summary-item {
-  padding: 16px;
-  background: #f3f8f6;
-  border-radius: 14px;
-  p {
-    margin: 8px 0 0;
-    font-size: 20px;
-    font-weight: 700;
-  }
-}
-// אזור ההמלצות שמתחת למסלול
-.trip-advice {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  margin-top: 32px;
-  align-items: start;
-}
-// עיצוב משותף לכרטיס התחזית ולכרטיס הציוד
-.weather-card,
-.equipment-card {
-  background: #f8fbff;
-  border: 1px solid #e1eaf8;
-  border-radius: 20px;
-  padding: 24px;
-  min-width: 0;
-}
-.info-card-heading {
-  display: flex;
-  align-items: center;
-  gap: 13px;
-  margin-bottom: 24px;
-  h3 {
-    margin: 0 0 6px;
-    font-size: 18px;
-    color: #18233b;
-  }
-  p {
-    margin: 0;
-    color: #64748b;
-    font-size: 12px;
-    line-height: 1.6;
-  }
-}
-.info-card-icon {
-  flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  display: grid;
-  place-items: center;
-  background: #eaf1ff;
-  border-radius: 14px;
-  font-size: 25px;
-}
-// נתוני התחזית שמתקבלים מה-API
-.weather-card {
-  background: linear-gradient(
-    145deg,
-    #f0f7ff 0%,
-    #ffffff 100%
-  );
-}
-.weather-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-}
-.weather-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 12px;
-  min-width: 0;
-  min-height: 105px;
-  padding: 12px 6px;
-  background: white;
-  border: 1px solid #e6eefb;
-  border-radius: 14px;
-  span {
-    font-size: 11px;
-    color: #64748b;
-    line-height: 1.5;
-  }
-  strong {
-    font-size: clamp(18px, 2.5vw, 25px);
-    font-weight: 800;
-    color: #2563eb;
-    direction: ltr;
-  }
-}
-.weather-unavailable {
-  margin: 0;
-  padding: 15px;
-  background: white;
-  border-radius: 12px;
-  color: #64748b;
-  line-height: 1.7;
-}
-// המלצות הציוד שהסוכן יצר והסיבה לכל המלצה
-.equipment-card {
-  background: linear-gradient(
-    145deg,
-    #f2faf6 0%,
-    #ffffff 100%
-  );
-  border-color: #deeee5;
-  .info-card-icon {
-    background: #e1f4e9;
-  }
-}
-.equipment-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.equipment-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 15px;
-  background: white;
-  border: 1px solid #e4eee8;
-  border-radius: 13px;
-  transition: transform 0.2s;
-  &:hover {
-    transform: translateX(-3px);
-  }
-}
-.equipment-check {
-  flex-shrink: 0;
-  width: 27px;
-  height: 27px;
-  display: grid;
-  place-items: center;
-  background: #dcfce7;
-  color: #15803d;
-  border-radius: 50%;
-  font-size: 15px;
-  font-weight: bold;
-}
-.equipment-content {
-  min-width: 0;
-  strong {
-    display: block;
-    margin-bottom: 6px;
-    font-size: 14px;
-    color: #18233b;
-  }
-  p {
-    margin: 0;
-    color: #64748b;
-    font-size: 13px;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-  }
-}
-.equipment-empty {
-  color: #64748b;
-  line-height: 1.7;
-}
-// יומן הפעולות שמציג את החלטות הסוכן
-.agent-heading {
-  display: flex;
-  align-items: center;
-  margin-bottom: 30px;
-  h2 { margin: 0 0 8px; font-size: 23px; }
-  p { margin: 0; color: #94a3b8; font-size: 14px; }
-  .agent-icon { background: #eff6ff; border-radius: 16px; padding: 15px; font-size: 25px; }
-  justify-content: flex-start;
-  gap: 18px;
-}
-.steps {
-  border-right: 2px solid #e2e8f0;
-  margin-right: 15px;
-  padding-right: 25px;
-}
-.step {
-  display: flex;
-  gap: 18px;
-  margin-bottom: 28px;
-  strong {
-    display: block;
-    margin-bottom: 7px;
-  }
-  p {
-    color: #64748b;
-    margin: 0;
-    line-height: 1.6;
-  }
-}
-.step-number {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  background: #dbeafe;
-  color: #2563eb;
-  border-radius: 50%;
-  font-weight: bold;
-}
-.technical-logs {
-  margin-top: 25px;
-  color: #64748b;
-  summary {
-    cursor: pointer;
-    font-weight: 600;
-  }
-}
-pre {
-  direction: ltr;
-  text-align: left;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-  background: #f1f5f9;
-  padding: 15px;
-  border-radius: 10px;
-  font-size: 12px;
-}
-footer {
-  display: flex;
-  justify-content: space-between;
-  padding: 30px 8%;
-  color: #94a3b8;
-  font-size: 13px;
-  border-top: 1px solid #e2e8f0;
-}
-// התאמה למסכים קטנים
-@media (max-width: 800px) {
-  .trip-advice {
-    grid-template-columns: 1fr;
-  }
-}
-@media (max-width: 650px) {
-  .header {
-    padding: 0 20px;
-  }
-  .container {
-    padding-top: 40px;
-  }
-  .form-grid {
-    grid-template-columns: 1fr;
-  }
-  .planner-card,
-  .result-card,
-  .agent-card {
-    padding: 22px;
-  }
-  .weather-card,
-  .equipment-card {
-    padding: 18px;
-  }
-  .weather-stats {
-    gap: 7px;
-  }
-  .weather-stat {
-    padding: 10px 5px;
-  }
-  footer {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-// אזור הפתיחה החדש
-.hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  text-align: center;
-  padding: 75px 24px 85px;
-  margin: -25px 0 40px;
-  border-radius: 32px;
-  background:
-    radial-gradient(
-      ellipse at 18% 20%,
-      rgba(96, 165, 250, 0.18),
-      transparent 42%
-    ),
-    radial-gradient(
-      ellipse at 85% 85%,
-      rgba(45, 212, 191, 0.13),
-      transparent 40%
-    ),
-    linear-gradient(145deg, #ffffff, #f0f6ff);
-  border: 1px solid #e4edfb;
-}
-.hero-content {
-  position: relative;
-  z-index: 2;
-}
-.hero-glow {
-  position: absolute;
-  width: 230px;
-  height: 230px;
-  border-radius: 50%;
-  filter: blur(55px);
-  pointer-events: none;
-  opacity: 0.55;
-}
-.hero-glow-one {
-  top: -110px;
-  right: -70px;
-  background: #93c5fd;
-}
-.hero-glow-two {
-  bottom: -130px;
-  left: -40px;
-  background: #99f6e4;
-}
-.hero-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px 18px;
-  border-radius: 100px;
-  background: white;
-  border: 1px solid #dbeafe;
-  color: #2563eb;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 5px 20px rgba(37, 99, 235, 0.07);
-}
-.hero-badge-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #22c55e;
-  box-shadow: 0 0 0 4px #dcfce7;
-}
-.hero h1 {
-  margin: 28px 0 22px;
-  font-size: clamp(42px, 6vw, 72px);
-  font-weight: 800;
-  line-height: 1.16;
-  letter-spacing: -2.5px;
-  color: #14213d;
-  span {
-    background: linear-gradient(
-      90deg,
-      #2563eb,
-      #3b82f6,
-      #0d9488
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-}
-.hero p {
-  max-width: 650px;
-  margin: 0 auto;
-  color: #64748b;
-  font-size: 17px;
-  line-height: 2;
-}
-.hero-features {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 32px;
-  span {
-    padding: 11px 17px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.85);
-    border: 1px solid #e2eaf6;
-    color: #475569;
-    font-size: 13px;
-    font-weight: 600;
-    box-shadow: 0 5px 15px rgba(30, 60, 100, 0.035);
-  }
-}
-@media (max-width: 650px) {
-  .hero {
-    padding: 55px 18px 60px;
-    margin-top: 0;
-    border-radius: 24px;
-  }
-  .hero h1 {
-    letter-spacing: -1.5px;
-  }
-  .hero p {
-    font-size: 15px;
-    br {
-      display: none;
-    }
-  }
-  .hero-features {
-    gap: 8px;
-    span {
-      font-size: 12px;
-      padding: 9px 12px;
-    }
-  }
-}
-/* כרטיס תכנון הטיול */
-.planner-card {
-  position: relative;
-  border: 1px solid #e0e9f7;
-  border-radius: 26px;
-  padding: 42px;
-  background: #ffffff;
-  box-shadow:
-    0 20px 60px rgba(30, 64, 125, 0.07),
-    0 4px 12px rgba(30, 64, 125, 0.03);
-}
-/* כותרת הכרטיס */
-.planner-card .section-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 36px;
-  h2 {
-    font-size: 25px;
-    font-weight: 800;
-    color: #17233d;
-  }
-  p {
-    color: #7b8aa3;
-    font-size: 14px;
-  }
-}
-.planner-card .section-icon {
-  display: grid;
-  place-items: center;
-  width: 60px;
-  height: 60px;
-  background: linear-gradient(135deg, #eaf2ff, #e5f8f4);
-  border: 1px solid #e2edfb;
-  border-radius: 18px;
-  font-size: 27px;
-}
-/* שדות הטופס */
-.planner-card label {
-  display: flex;
-  flex-direction: column;
-  color: #34435e;
-  font-size: 13px;
-  font-weight: 700;
-  gap: 11px;
-}
-.planner-card input,
-.planner-card select {
-  min-height: 54px;
-  padding: 15px 17px;
-  border: 1px solid #dce5f1;
-  border-radius: 13px;
-  background: #f8faff;
-  color: #253451;
-  font-size: 14px;
-  transition:
-    border-color 0.2s,
-    box-shadow 0.2s,
-    background 0.2s;
-  &:hover {
-    border-color: #b9ccec;
-    background: #ffffff;
-  }
-  &:focus {
-    background: #ffffff;
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-  }
-}
-/* כפתור הפעלת הסוכן */
-.planner-card .plan-button {
-  position: relative;
-  min-height: 60px;
-  margin-top: 36px;
-  border-radius: 15px;
-  background: linear-gradient(110deg, #2563eb, #3b82f6, #0d9488);
-  color: white;
-  font-size: 17px;
-  font-weight: 800;
-  box-shadow: 0 12px 25px rgba(37, 99, 235, 0.18);
-  transition:
-    transform 0.2s,
-    box-shadow 0.2s,
-    filter 0.2s;
-  &:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 16px 30px rgba(37, 99, 235, 0.25);
-    filter: brightness(1.05);
-  }
-  &:active:not(:disabled) {
-    transform: translateY(0);
-  }
-}
-/* התאמה לטלפון */
-@media (max-width: 650px) {
-  .planner-card {
-    padding: 24px 20px;
-    border-radius: 22px;
-  }
-  .planner-card .section-heading {
-    h2 {
-      font-size: 21px;
-    }
-  }
-  .planner-card .section-icon {
-    width: 48px;
-    height: 48px;
-    font-size: 22px;
-  }
-}
+$ink: #153b32;
+$forest: #154d3f;
+$muted: #6d7e76;
+$cream: #f7f7f0;
+$line: #e4eae3;
+$gold: #d6b579;
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: $cream; color: $ink; font-family: 'Heebo', Arial, sans-serif; }
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+.app { min-height: 100vh; overflow-x: hidden; }
+.header { height: 82px; display: flex; align-items: center; justify-content: space-between; padding: 0 max(5%, calc((100vw - 1220px)/2)); background: rgba(255,255,255,.95); border-bottom: 1px solid $line; }
+.logo { font-size: 27px; font-weight: 900; letter-spacing: -.8px; color: $forest; }
+.header-tag { direction: ltr; border: 1px solid #dce8de; background: #eff5ee; color: $forest; border-radius: 100px; padding: 9px 18px; font-size: 12px; font-weight: 800; letter-spacing: 1.3px; }
+.container { width: min(1220px, calc(100% - 48px)); margin: 0 auto; padding: 30px 0 90px; }
+.hero { position: relative; isolation: isolate; overflow: hidden; display: flex; align-items: center; min-height: 410px; margin-bottom: 30px; padding: 65px 7%; border-radius: 30px; color: #fff; background: radial-gradient(ellipse at 5% 90%, rgba(211,176,113,.13), transparent 40%), radial-gradient(ellipse at 95% 5%, rgba(117,184,147,.24), transparent 48%), linear-gradient(115deg, #12372e 0%, #1c5543 100%); box-shadow: 0 24px 55px rgba(25,67,52,.16); }
+.hero-content { position: relative; z-index: 2; max-width: 750px; }
+.hero-glow { position: absolute; border-radius: 50%; pointer-events: none; filter: blur(60px); opacity: .16; }
+.hero-glow-one { width: 400px; height: 400px; background: #a2d4b7; top: -230px; right: -120px; }
+.hero-glow-two { width: 350px; height: 350px; background: #e2c18a; bottom: -250px; left: 20px; }
+.hero-badge { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgba(255,255,255,.3); border-radius: 100px; background: rgba(255,255,255,.12); padding: 8px 15px; font-size: 13px; font-weight: 700; backdrop-filter: blur(12px); }
+.hero-badge-dot { width: 8px; height: 8px; background: #bce5a6; border-radius: 50%; box-shadow: 0 0 0 4px rgba(188,229,166,.2); }
+.hero h1 { font-size: clamp(43px, 5.5vw, 78px); line-height: 1.17; letter-spacing: -2px; font-weight: 900; margin: 22px 0; }
+.hero h1 span { color: #e7c58c; }
+.hero p { font-size: clamp(15px,1.5vw,18px); line-height: 1.95; color: #e0eee5; margin: 0; }
+.hero-features { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+.hero-features span { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); padding: 9px 14px; border-radius: 10px; font-size: 12px; font-weight: 700; }
+.planner-card, .result-card, .agent-card, .loading-card { background: #fff; border: 1px solid $line; border-radius: 26px; box-shadow: 0 16px 48px rgba(28,64,45,.055); }
+.planner-card { padding: 38px 42px 42px; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; gap: 16px; }
+.section-heading h2 { margin: 0 0 5px; font-size: 26px; font-weight: 900; letter-spacing: -.5px; }
+.section-heading p { margin: 0; color: $muted; font-size: 14px; }
+.section-icon { display: grid; place-items: center; background: #e9f3e8; width: 56px; height: 56px; border-radius: 17px; font-size: 26px; }
+.form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 22px; }
+.planner-card label { display: flex; flex-direction: column; gap: 9px; font-size: 13px; font-weight: 800; color: #405a50; }
+.planner-card input, .planner-card select { width: 100%; min-height: 54px; padding: 12px 16px; border: 1px solid #dce5dc; border-radius: 12px; background: #f9fbf8; color: $ink; outline: none; transition: border-color .2s, box-shadow .2s, background .2s; }
+.planner-card input:focus, .planner-card select:focus { border-color: #4b9474; box-shadow: 0 0 0 4px rgba(75,148,116,.13); background: white; }
+.plan-button { width: 100%; min-height: 61px; margin-top: 28px; border: 0; border-radius: 13px; background: linear-gradient(110deg,#174f3e,#267b5d); color: white; font-size: 18px; font-weight: 900; box-shadow: 0 12px 22px rgba(20,77,60,.18); transition: transform .2s, box-shadow .2s; }
+.plan-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 18px 28px rgba(20,77,60,.25); }
+.plan-button:disabled { opacity: .55; cursor: not-allowed; }
+.error { color: #b33838; font-weight: 700; text-align: center; }
+.loading-card { margin-top: 25px; padding: 45px 20px; text-align: center; }
+.loading-card h3 { font-size: 23px; margin-bottom: 5px; }
+.loading-card p { color: $muted; }
+.spinner { width: 42px; height: 42px; margin: 0 auto 20px; border: 4px solid #e4efe7; border-top-color: #1c7755; border-radius: 50%; animation: spin .85s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.results { display: grid; gap: 25px; margin-top: 32px; animation: rise .55s ease both; }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+.result-card, .agent-card { padding: 39px 42px; }
+.eyebrow { display: inline-block; padding: 8px 15px; border-radius: 100px; background: #e8f4e8; color: #276a49; font-size: 12px; font-weight: 900; }
+.result-card > h2 { margin: 17px 0 27px; font-size: 32px; letter-spacing: -.7px; }
+.result-card > h3 { font-size: 23px; margin: 35px 0 0; }
+.summary-item { border: 1px solid #e0e9df; border-radius: 16px; padding: 20px; background: #f7faf5; }
+.summary-item strong { display: block; font-size: 13px; color: #6a8073; }
+.summary-item p { margin: 7px 0 0; font-size: 25px; font-weight: 900; color: $forest; }
+.attractions-list { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 20px; margin-top: 19px; }
+.attraction-item { background: white; border: 1px solid $line; border-radius: 18px; overflow: hidden; box-shadow: 0 10px 25px rgba(20,60,42,.055); transition: transform .2s, box-shadow .2s; }
+.attraction-item:hover { transform: translateY(-4px); box-shadow: 0 17px 30px rgba(20,60,42,.12); }
+.attraction-image { height: 205px; overflow: hidden; background: #e8f0e7; }
+.attraction-image img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .4s; }
+.attraction-item:hover img { transform: scale(1.045); }
+.image-placeholder { display: grid; place-items: center; height: 100%; color: #608573; font-size: 30px; }
+.attraction-content { padding: 20px; }
+.attraction-number { color: #317f5b; font-size: 12px; font-weight: 900; }
+.attraction-content h3 { margin: 8px 0; font-size: 20px; }
+.attraction-content p { margin: 0; color: $muted; font-size: 14px; }
+.trip-advice { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 20px; margin-top: 34px; align-items: start; }
+.weather-card, .equipment-card { min-width: 0; padding: 25px; border: 1px solid #dfe9e0; border-radius: 20px; background: #f6faf6; }
+.weather-card { background: linear-gradient(145deg,#f0f6f4,#fff); }
+.equipment-card { background: linear-gradient(145deg,#f8f7ee,#fff); border-color: #ebe7d8; }
+.info-card-heading { display: flex; align-items: center; gap: 13px; margin-bottom: 22px; }
+.info-card-heading h3 { margin: 0 0 4px; font-size: 19px; }
+.info-card-heading p { margin: 0; color: $muted; font-size: 12px; line-height: 1.6; }
+.info-card-icon { display: grid; place-items: center; width: 49px; height: 49px; flex-shrink: 0; border-radius: 14px; background: #e4eee6; font-size: 24px; }
+.equipment-card .info-card-icon { background: #f0ead8; }
+.weather-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 9px; }
+.weather-stat { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 12px; min-height: 105px; padding: 12px 5px; border-radius: 13px; border: 1px solid #e5ede7; background: white; }
+.weather-stat span { color: $muted; font-size: 11px; }
+.weather-stat strong { font-size: clamp(18px,2vw,25px); color: $forest; direction: ltr; }
+.weather-unavailable, .equipment-empty { color: $muted; line-height: 1.8; }
+.equipment-list { display: flex; flex-direction: column; gap: 10px; }
+.equipment-item { display: flex; align-items: flex-start; gap: 11px; padding: 14px; background: white; border: 1px solid #ebe8dd; border-radius: 13px; }
+.equipment-check { display: grid; place-items: center; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; color: #1b7451; background: #e0f2e5; font-weight: 900; }
+.equipment-content strong { font-size: 14px; }
+.equipment-content p { margin: 5px 0 0; color: $muted; font-size: 13px; line-height: 1.75; }
+.trip-text { margin-top: 25px; padding: 23px 26px; background: #f7faf5; border: 1px solid #e0e9df; border-right: 4px solid #3e8865; border-radius: 13px; white-space: pre-wrap; line-height: 1.95; color: #4a6357; overflow-wrap: anywhere; }
+.agent-card { background: #173d33; border-color: #173d33; color: #fff; }
+.agent-heading { display: flex; align-items: center; gap: 16px; margin-bottom: 30px; }
+.agent-icon { display: grid; place-items: center; flex-shrink: 0; width: 57px; height: 57px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14); border-radius: 16px; font-size: 27px; }
+.agent-heading h2 { margin: 0 0 5px; font-size: 26px; }
+.agent-heading p { margin: 0; color: #b8d3c5; font-size: 14px; }
+.steps { position: relative; margin-right: 17px; padding-right: 27px; border-right: 2px solid rgba(220,239,220,.23); }
+.step { position: relative; display: flex; align-items: flex-start; gap: 17px; margin-bottom: 16px; padding: 17px 19px; border: 1px solid rgba(255,255,255,.11); border-radius: 15px; background: rgba(255,255,255,.06); }
+.step:last-child { margin-bottom: 0; }
+.step-number { display: grid; place-items: center; width: 34px; height: 34px; flex-shrink: 0; margin-right: -66px; margin-left: 17px; background: #d7e9d5; color: #174637; border: 4px solid #173d33; border-radius: 50%; font-size: 13px; font-weight: 900; }
+.step strong { display: block; margin-bottom: 5px; font-size: 15px; }
+.step p { margin: 0; color: #c5d9cf; line-height: 1.7; font-size: 13px; }
+.step:has(strong:first-child) { transition: background .2s; }
+.technical-logs { margin-top: 27px; color: #d3e3d9; }
+.technical-logs summary { cursor: pointer; font-weight: 700; }
+pre { padding: 16px; border-radius: 11px; background: #0c2d25; color: #dcece2; direction: ltr; text-align: left; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 12px; }
+footer { display: flex; align-items: center; justify-content: space-between; gap: 15px; padding: 27px max(5%,calc((100vw - 1220px)/2)); border-top: 1px solid $line; color: $muted; font-size: 13px; }
+@media (max-width: 850px) { .trip-advice { grid-template-columns: 1fr; } .hero { min-height: 360px; } }
+@media (max-width: 650px) { .header { height: 68px; padding: 0 20px; } .logo { font-size: 22px; } .header-tag { font-size: 10px; padding: 7px 10px; } .container { width: calc(100% - 28px); padding-top: 15px; } .hero { min-height: 380px; padding: 38px 24px; border-radius: 22px; } .hero h1 { letter-spacing: -1px; } .hero p br { display: none; } .hero-features { gap: 7px; } .hero-features span { font-size: 11px; } .planner-card, .result-card, .agent-card { padding: 24px 20px; border-radius: 20px; } .section-heading h2 { font-size: 22px; } .section-icon { width: 46px; height: 46px; font-size: 22px; } .form-grid { grid-template-columns: 1fr; gap: 17px; } .result-card > h2 { font-size: 26px; } .weather-card, .equipment-card { padding: 18px; } .weather-stats { gap: 6px; } .weather-stat { padding: 10px 4px; } .steps { padding-right: 18px; } .step { padding: 14px 12px; } .step-number { margin-right: -53px; margin-left: 10px; } footer { flex-direction: column; align-items: flex-start; padding: 25px 20px; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+.step-warning { border-color: rgba(245,188,99,.46); background: rgba(183,109,36,.17); }
+.step-warning .step-number { background: #f4c58a; color: #573810; }
+.step-warning strong { color: #ffe0b0; }
+
+// Final polish: three balanced metrics, more readable decision log and refined hero.
+.trip-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.trip-summary-grid .summary-item { min-width: 0; min-height: 114px; display: flex; flex-direction: column; justify-content: center; padding: 20px 18px; }
+.trip-summary-grid .summary-item p { font-size: clamp(19px, 2.1vw, 27px); overflow-wrap: anywhere; }
+.hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .3; background: repeating-linear-gradient(135deg, transparent 0 110px, rgba(255,255,255,.025) 111px 112px, transparent 113px 230px); }
+.hero h1 { text-shadow: 0 3px 18px rgba(0,0,0,.09); }
+.hero-features span { backdrop-filter: blur(8px); }
+.agent-heading { margin-bottom: 23px; }
+.step { margin-bottom: 10px; padding: 12px 16px; gap: 12px; border-radius: 13px; }
+.step strong { font-size: 14px; margin-bottom: 3px; }
+.step p { font-size: 12px; line-height: 1.6; }
+.step-number { width: 30px; height: 30px; margin-right: -61px; margin-left: 17px; }
+.step-warning { border-color: rgba(245,188,99,.55); background: rgba(183,109,36,.18); }
+.step-success { transition: background .2s ease; }
+.step-success:hover { background: rgba(255,255,255,.095); }
+.plan-button:focus-visible, .technical-logs summary:focus-visible { outline: 3px solid #d6b579; outline-offset: 4px; }
+@media (max-width: 750px) { .trip-summary-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } .trip-summary-grid .summary-item:last-child { grid-column: 1 / -1; } }
+@media (max-width: 450px) { .trip-summary-grid { grid-template-columns: 1fr; } .trip-summary-grid .summary-item:last-child { grid-column: auto; } .trip-summary-grid .summary-item { min-height: 90px; } .step { padding: 11px; } .step-number { margin-right: -52px; margin-left: 8px; } }

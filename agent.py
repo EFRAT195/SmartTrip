@@ -1,12 +1,43 @@
-
 import json
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 from dotenv import load_dotenv
 from tools import search_attractions, check_trip
 from weather_tool import get_weather
 
 load_dotenv()
-client = OpenAI()
+client = OpenAI(timeout=35.0, max_retries=1)
+
+
+def safe_openai_response(**kwargs):
+    """Return an OpenAI response or a controlled error message."""
+    try:
+        return client.responses.create(**kwargs), None
+    except OpenAIError:
+        return None, "שירות הבינה המלאכותית אינו זמין כרגע. נסי שוב מאוחר יותר."
+    except (TimeoutError, ConnectionError):
+        return None, "הבקשה לשירות הבינה המלאכותית נכשלה עקב בעיית תקשורת."
+
+
+def failure_response(message, logs, weather=None):
+    return {
+        "success": False,
+        "result": message,
+        "selection_reason": "",
+        "logs": logs,
+        "trip": None,
+        "weather": weather,
+        "equipment": []
+    }
+
+
+def parse_json_object(raw):
+    """Reject malformed JSON and JSON values other than objects."""
+    try:
+        value = json.loads(raw)
+    except (json.JSONDecodeError, TypeError, ValueError):
+        return None
+    return value if isinstance(value, dict) else None
+
 
 # הכלים שהסוכן יכול לבחור להפעיל
 TOOLS = [
@@ -161,12 +192,18 @@ Equipment rules:
 
     # לולאת הסוכן: בחירת כלי, קבלת תוצאה והחלטה על הפעולה הבאה
     for step in range(12):
-        response = client.responses.create(
+        response, api_error = safe_openai_response(
             model="gpt-4o-mini",
             instructions=instructions,
             input=messages,
             tools=TOOLS
         )
+        if api_error:
+            logs.append({
+                "action": "error", "title": "שגיאה בשירות AI",
+                "description": api_error, "success": False
+            })
+            return failure_response(api_error, logs, weather_result)
 
         messages.extend(response.output)
 
@@ -194,7 +231,7 @@ Equipment rules:
                 continue
 
             # אחרי שהכלים סיימו, מבקשים מהמודל פלט JSON מובנה
-            final_response = client.responses.create(
+            final_response, api_error = safe_openai_response(
                 model="gpt-4o-mini",
                 instructions=(
                     instructions
@@ -230,10 +267,33 @@ Do not invent weather data.
                 tool_choice="none"
             )
 
-            # המודל מחזיר מחרוזת JSON, ואנחנו ממירים אותה למילון Python
-            recommendations = json.loads(
-                final_response.output_text
-            )
+            if api_error:
+                logs.append({
+                    "action": "error", "title": "שגיאה בהפקת ההמלצות",
+                    "description": api_error, "success": False
+                })
+                return failure_response(api_error, logs, weather_result)
+
+            # מוודאים שהפלט תקין לפני שניגשים לשדות שלו.
+            recommendations = parse_json_object(final_response.output_text)
+            if (
+                recommendations is None
+                or not isinstance(recommendations.get("summary"), str)
+                or not isinstance(recommendations.get("selection_reason"), str)
+                or not isinstance(recommendations.get("equipment"), list)
+                or any(
+                    not isinstance(item, dict)
+                    or not isinstance(item.get("name"), str)
+                    or not isinstance(item.get("reason"), str)
+                    for item in recommendations.get("equipment", [])
+                )
+            ):
+                message = "התקבלה תשובה לא תקינה מהמודל. נסי שוב."
+                logs.append({
+                    "action": "error", "title": "תשובת AI לא תקינה",
+                    "description": message, "success": False
+                })
+                return failure_response(message, logs, weather_result)
 
             equipment = (
                 recommendations["equipment"]
@@ -277,7 +337,18 @@ Do not invent weather data.
 
         # מפעילים בפועל את הכלי שהמודל ביקש
         for call in calls:
-            args = json.loads(call.arguments)
+            args = parse_json_object(call.arguments)
+            if args is None:
+                result = {"valid": False, "error": "התקבלו ארגומנטים לא תקינים מהמודל."}
+                logs.append({
+                    "action": "error", "title": "ארגומנטים לא תקינים",
+                    "description": result["error"], "success": False
+                })
+                messages.append({
+                    "type": "function_call_output", "call_id": call.call_id,
+                    "output": json.dumps(result, ensure_ascii=False)
+                })
+                continue
 
             if call.name == "search_attractions":
                 result = search_attractions(region, category)
@@ -302,7 +373,12 @@ Do not invent weather data.
                 })
 
             elif call.name == "check_trip":
-                ids = args["attraction_ids"]
+                ids = args.get("attraction_ids")
+                if (
+                    not isinstance(ids, list)
+                    or any(type(item) is not int for item in ids)
+                ):
+                    ids = []
 
                 # מציגים ניסיון תיקון רק אם הבדיקה הקודמת נכשלה
                 # והמודל בחר הפעם הרכב אטרקציות שונה
@@ -412,10 +488,22 @@ Do not invent weather data.
                     }
 
                 else:
-                    result = get_weather(region, trip_date)
+                    try:
+                        result = get_weather(region, trip_date)
+                        if not isinstance(result, dict):
+                            raise ValueError("Invalid weather response")
+                    except Exception:
+                        # כשל בשירות חיצוני לא מבטל מסלול שכבר אושר.
+                        result = {
+                            "available": False,
+                            "reason": "לא ניתן לקבל כרגע תחזית מזג אוויר."
+                        }
                     weather_result = result
 
-                    if result.get("available"):
+                    if result.get("available") and all(
+                        key in result
+                        for key in ("temperature_min", "temperature_max", "rain_probability")
+                    ):
                         description = (
                             f"תחזית ל־{trip_date}: "
                             f"{result['temperature_min']}°–"
@@ -424,10 +512,12 @@ Do not invent weather data.
                             f"{result['rain_probability']}%."
                         )
                     else:
-                        description = result.get(
-                            "reason",
-                            "תחזית אינה זמינה."
-                        )
+                        result = {
+                            "available": False,
+                            "reason": result.get("reason") or "תחזית אינה זמינה."
+                        }
+                        weather_result = result
+                        description = result["reason"]
 
                     logs.append({
                         "action": "weather",
